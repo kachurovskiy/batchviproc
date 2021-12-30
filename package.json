@@ -1,0 +1,29 @@
+{
+  "name": "batchviproc",
+  "version": "1.0.0",
+  "description": "Electron app for batch video processing",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kachurovskiy/batchviproc.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kachurovskiy/batchviproc/issues"
+  },
+  "homepage": "https://github.com/kachurovskiy/batchviproc#readme",
+  "dependencies": {
+    "glob": "^7.2.0",
+    "tmp": "^0.2.1",
+    "utimes": "^4.1.1"
+  },
+  "devDependencies": {
+    "electron": "^16.0.5",
+    "electron-builder": "^22.14.5"
+  }
+}

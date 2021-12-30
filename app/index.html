@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>batchviproc</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <div id="settingsContainer">
+      <h1>Batch video compression</h1>
+      <p>All consumer cameras record videos that can be compressed 2x without a visible loss of quality.
+        This happens because effective video encoding takes a lot of time and computing power while most
+        cameras have to record real-time and conserve battery.</p>
+      <p>Make sure you already have <a href="https://windowsloop.com/install-ffmpeg-windows-10/#download-ffmpeg">ffmpeg installed</a>.</p>
+      <p>On an average desktop, this operation takes 1-2x of the video run time e.g. a 30s video will take
+        a minute to process.</p>
+      <p>Pick a folder on your computer and this app will find all MP4 videos and process them one-by-one.</p>
+      <p>Metadata and file creation, modification and access dates will be preserved where possible.</p>
+      <p><button type="button" id="folderButton">Pick a folder</button></p>
+    </div>
+    <div id="logContainer">
+      <h2>Log</h2>
+      <p><textarea id="logArea" rows="15" style="width: 95%;" disabled></textarea></p>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

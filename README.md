@@ -1,2 +1,3 @@
-# batchviproc
-Desktop batch video compression / processing tool
+# Desktop batch video compression tool
+
+
