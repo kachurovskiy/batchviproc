@@ -6,7 +6,7 @@ const {renameSync, statSync, utimesSync} = require('fs');
 const {spawn} = require('child_process');
 const tmp = require('tmp');
 const {utimes} = require('utimes');
-const ffmpeg = require('@ffmpeg-installer/ffmpeg');
+const ffPath = require('ffmpeg-static');
 
 let win;
 let dir;
@@ -84,7 +84,7 @@ async function processOneFile() {
     const tmpName = tmp.tmpNameSync() + '.' + input.split('.').pop();
     processedFiles.push(input);
     log(input);
-    childFfmpeg = spawn(ffmpeg.path, [
+    childFfmpeg = spawn(ffPath.replace('app.asar', 'app.asar.unpacked'), [
       '-hide_banner',
       '-loglevel',
       'error',

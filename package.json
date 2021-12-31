@@ -1,6 +1,6 @@
 {
   "name": "batchviproc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Electron app for batch video processing",
   "main": "app/main.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/kachurovskiy/batchviproc#readme",
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "ffmpeg-static": "^4.4.0",
     "glob": "^7.2.0",
     "tmp": "^0.2.1",
     "utimes": "^4.1.1"

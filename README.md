@@ -1,6 +1,6 @@
 # Desktop batch video compression tool
 
-[Download EXE file](https://github.com/kachurovskiy/batchviproc/raw/main/batchviproc%201.0.0.exe)
+[Download EXE file](https://github.com/kachurovskiy/batchviproc/raw/main/batchviproc%201.0.1.exe)
 
 <img width="590" alt="batchviproc" src="https://user-images.githubusercontent.com/517919/147787665-09bdd452-f867-4129-9a6d-a1a12659b91d.png">
 
