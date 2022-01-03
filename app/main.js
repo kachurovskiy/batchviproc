@@ -81,7 +81,8 @@ async function processOneFile() {
       resolve(false);
       return;
     }
-    const tmpName = tmp.tmpNameSync() + '.' + input.split('.').pop();
+    const extension = input.split('.').pop();
+    const tmpName = input.replace('.' + extension, '.tmp.' + extension);
     processedFiles.push(input);
     log(input);
     childFfmpeg = spawn(ffPath.replace('app.asar', 'app.asar.unpacked'), [
@@ -116,8 +117,20 @@ async function processOneFile() {
         const inputStats = statSync(input);
         const outputStats = statSync(tmpName);
         const savedMb = (inputStats.size - outputStats.size)  / (1024 * 1024);
+        if (savedMb < 0) {
+          log("Compressed file is larger");
+          resolve(true);
+          return;
+        }
         spaceSavedMb += savedMb;
-        renameSync(tmpName, input);
+        log('Saved ' + Math.round(savedMb) + 'Mb');
+        try {
+          renameSync(tmpName, input);
+        } catch (e) {
+          log('Error moving file: ' + e);
+          resolve(false);
+          return;
+        }
         try {
           await utimes(input, {
             btime: inputStats.birthtime.getTime(),
@@ -127,7 +140,6 @@ async function processOneFile() {
         } catch (e) {
           log('Error changing file timestamps (' + inputStats + '): ' + e);
         }
-        log('Finished, saved ' + Math.round(savedMb) + 'Mb');
         resolve(true);
       }
     });
