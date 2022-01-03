@@ -41,7 +41,7 @@ function addNewFiles() {
   if (!dir) {
     return;
   }
-  glob('**/*{/,+(.mp4|.MP4)}', {cwd: dir}, (err, res) => {
+  glob('**/*{/,+(.mp4|.MP4|.mts|.MTS|.m2ts|.M2TS|.flv|.FLV|.m4v|.M4V)}', {cwd: dir}, (err, res) => {
     if (err) {
       log('error listing images in dir: ' + err);
     } else {
@@ -107,7 +107,7 @@ async function processOneFile() {
     childFfmpeg.stderr.on('data', (data) => {
       log(`stderr: ${data}`);
     });
-    childFfmpeg.on('close', async (code) => {
+    childFfmpeg.on('exit', async (code) => {
       childFfmpeg = null;
       if (code) {
         log(`ffmpeg exited with ${code}`);
