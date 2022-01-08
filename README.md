@@ -2,7 +2,7 @@
 
 [Download EXE file](https://github.com/kachurovskiy/batchviproc/raw/main/batchviproc%201.0.2.exe)
 
-<img width="590" alt="batchviproc" src="https://user-images.githubusercontent.com/517919/147787665-09bdd452-f867-4129-9a6d-a1a12659b91d.png">
+<img width="590" alt="batchviproc" src="https://user-images.githubusercontent.com/517919/148660250-5d73c5e8-d1ac-4918-a52e-e26d53000733.png">
 
 ## Development
 
