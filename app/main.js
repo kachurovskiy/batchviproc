@@ -1,8 +1,8 @@
 const {app, BrowserWindow, dialog, ipcMain} = require('electron');
 const path = require('path');
-const glob = require('glob');
+const {globSync} = require('glob');
 const os = require('os');
-const {renameSync, statSync, utimesSync} = require('fs');
+const {renameSync, statSync, unlinkSync} = require('fs');
 const {spawn} = require('child_process');
 const tmp = require('tmp');
 const {utimes} = require('utimes');
@@ -38,27 +38,19 @@ function log(message) {
 }
 
 function addNewFiles() {
-  if (!dir) {
-    return;
-  }
-  glob('**/*{/,+(.mp4|.MP4|.mts|.MTS|.m2ts|.M2TS|.flv|.FLV|.m4v|.M4V)}', {cwd: dir}, (err, res) => {
-    if (err) {
-      log('error listing images in dir: ' + err);
+  const res = globSync('**/*{/,+(.mp4|.MP4|.mts|.MTS|.m2ts|.M2TS|.flv|.FLV|.m4v|.M4V)}', {cwd: dir});
+  for (let i = res.length - 1; i >= 0; i--) {
+    if (res[i].endsWith('/') || res[i].endsWith('\\')) {
+      res.splice(i, 1);
     } else {
-      for (let i = res.length - 1; i >= 0; i--) {
-        if (res[i].endsWith('/') || res[i].endsWith('\\')) {
-          res.splice(i, 1);
-        } else {
-          const newFile = path.join(dir, res[i]);
-          if (files.indexOf(newFile) == -1) {
-            files.push(newFile);
-          }
-        }
+      const newFile = path.join(dir, res[i]);
+      if (files.indexOf(newFile) == -1) {
+        files.push(newFile);
       }
-      log(`found ${res.length} videos`);
-      send('proc-dir-change', {dir, fileCount: files.length});
     }
-  });
+  }
+  log(`found ${res.length} videos`);
+  send('proc-dir-change', {dir, fileCount: files.length});
 }
 
 function getUnprocessedFileName() {
@@ -99,6 +91,7 @@ async function processOneFile() {
       '0',
       '-acodec',
       'aac',
+      '-y', // overwrite tmp output file if exists
       tmpName
     ]);
     os.setPriority(childFfmpeg.pid, os.constants.priority.PRIORITY_LOW);
@@ -119,6 +112,7 @@ async function processOneFile() {
         const savedMb = (inputStats.size - outputStats.size)  / (1024 * 1024);
         if (savedMb < 0) {
           log("Compressed file is larger");
+          unlinkSync(tmpName);
           resolve(true);
           return;
         }
@@ -127,7 +121,7 @@ async function processOneFile() {
         try {
           renameSync(tmpName, input);
         } catch (e) {
-          log('Error moving file: ' + e);
+          log(`Error moving ${tmpName}: ` + e);
           resolve(false);
           return;
         }
@@ -146,19 +140,26 @@ async function processOneFile() {
   });
 }
 
-ipcMain.on('proc-pick-dir', (event, arg) => {
+ipcMain.on('proc-pick-dir', async (event, arg) => {
   log('picking folder');
   const paths = dialog.showOpenDialogSync(win, {properties: ['openDirectory']});
   if (paths) {
     log('folder ' + paths);
     dir = paths[0];
-    addNewFiles();
+    spaceSavedMb = 0;
+    try {
+      addNewFiles();
+      await stop();
+      await start();
+    } catch (err) {
+      log(err);
+    }
   } else {
     log('nothing selected');
   }
 });
 
-ipcMain.on('proc-start', async (event, arg) => {
+async function start() {
   if (!dir) {
     log('no folder selected');
     return;
@@ -178,17 +179,17 @@ ipcMain.on('proc-start', async (event, arg) => {
       log('failed: ' + e);
     }
   }
-  log('done');
+  log('Done. Space saved total ' + Math.round(spaceSavedMb) + 'Mb');
   working = false;
-});
+}
 
-ipcMain.on('proc-stop', async (event, arg) => {
+function stop() {
   if (!working) {
     return;
   }
-  log('Space saved total ' + spaceSavedMb + 'Mb');
-  working = false;
   if (childFfmpeg) {
     childFfmpeg.kill();
+    childFfmpeg = null;
   }
-});
+  working = false;
+}

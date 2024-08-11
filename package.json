@@ -1,6 +1,6 @@
 {
   "name": "batchviproc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Electron app for batch video processing",
   "main": "app/main.js",
   "scripts": {
@@ -18,13 +18,13 @@
   },
   "homepage": "https://github.com/kachurovskiy/batchviproc#readme",
   "dependencies": {
-    "ffmpeg-static": "^4.4.0",
-    "glob": "^7.2.0",
-    "tmp": "^0.2.1",
-    "utimes": "^4.1.1"
+    "ffmpeg-static": "5.2.0",
+    "glob": "11.0.0",
+    "tmp": "0.2.3",
+    "utimes": "5.2.1"
   },
   "devDependencies": {
-    "electron": "^16.0.5",
-    "electron-builder": "^22.14.5"
+    "electron": "31.3.1",
+    "electron-builder": "24.13.3"
   }
 }

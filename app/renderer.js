@@ -9,11 +9,9 @@ folderButton.addEventListener('click', () => {
 });
 
 window.api.ipcRendererOn('proc-dir-change', (event, message) => {
-  window.api.ipcRendererSend('proc-stop', {});
   folderButton.innerText = message.dir + ' (' + message.fileCount + ' videos)';
   logArea.value = '';
   logContainer.style.display = 'block';
-  window.api.ipcRendererSend('proc-start', {});
 });
 
 window.api.ipcRendererOn('proc-log', (event, message) => {
