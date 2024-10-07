@@ -1,4 +1,5 @@
 const {app, BrowserWindow, dialog, ipcMain} = require('electron');
+const fs = require('fs');
 const path = require('path');
 const {globSync} = require('glob');
 const os = require('os');
@@ -7,14 +8,44 @@ const {spawn} = require('child_process');
 const tmp = require('tmp');
 const {utimes} = require('utimes');
 const ffPath = require('ffmpeg-static');
+const crypto = require('crypto');
 
 let win;
 let dir;
 let files = [];
 let processedFiles = [];
+let failedFiles = [];
+let oneWayHashCache = {};
 let working = false;
 let childFfmpeg;
 let spaceSavedMb = 0;
+
+const userDataPath = app.getPath('userData');
+const processedFilesPath = path.join(userDataPath, 'processedFiles.txt');
+
+if (fs.existsSync(processedFilesPath)) {
+  try {
+    const data = fs.readFileSync(processedFilesPath, 'utf8');
+    processedFiles = data.split('\n').map(line => line.trim()).filter(line => !!line);
+  } catch (err) {
+    console.error('Error reading processed files', err);
+  }
+}
+
+function saveProcessedFiles() {
+  try {
+    fs.writeFileSync(processedFilesPath, processedFiles.join('\n'));
+  } catch (err) {
+    console.error('Error saving processed files', err);
+  }
+}
+
+function oneWayHash(value) {
+  if (oneWayHashCache[value]) return oneWayHashCache[value];
+  const result = crypto.createHash('sha256').update(value).digest('hex');
+  oneWayHashCache[value] = result;
+  return result;
+}
 
 app.whenReady().then(() => {
   win = new BrowserWindow({
@@ -49,13 +80,14 @@ function addNewFiles() {
       }
     }
   }
-  log(`found ${res.length} videos`);
   send('proc-dir-change', {dir, fileCount: files.length});
+  log(`found ${res.length} videos`);
+  log(`there are ${processedFiles.length} known, already processed files in ${processedFilesPath} - if you expect needing to re-process some of the already compressed files, delete that file and restart the app`);
 }
 
-function getUnprocessedFileName() {
+function getNextFileName() {
   for (let file of files) {
-    if (processedFiles.indexOf(file) >= 0) {
+    if (processedFiles.includes(oneWayHash(file)) || failedFiles.includes(file) || file.includes('.batchviproc.')) {
       continue;
     }
     return file;
@@ -68,14 +100,13 @@ async function processOneFile() {
     return false;
   }
   return new Promise((resolve, reject) => {
-    const input = getUnprocessedFileName();
+    const input = getNextFileName();
     if (!input) {
       resolve(false);
       return;
     }
     const extension = input.split('.').pop();
-    const tmpName = input.replace('.' + extension, '.tmp.' + extension);
-    processedFiles.push(input);
+    const tmpName = input.replace('.' + extension, '.batchviproc.' + extension);
     log(input);
     childFfmpeg = spawn(ffPath.replace('app.asar', 'app.asar.unpacked'), [
       '-hide_banner',
@@ -105,8 +136,12 @@ async function processOneFile() {
       childFfmpeg = null;
       if (code) {
         log(`ffmpeg exited with ${code}`);
+        failedFiles.push(input);
         resolve(false);
       } else {
+        processedFiles.push(oneWayHash(input));
+        saveProcessedFiles();
+
         const inputStats = statSync(input);
         const outputStats = statSync(tmpName);
         const savedMb = (inputStats.size - outputStats.size)  / (1024 * 1024);
