@@ -1,6 +1,6 @@
 {
   "name": "batchviproc",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Electron app for batch video processing",
   "main": "app/main.js",
   "scripts": {

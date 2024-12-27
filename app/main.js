@@ -32,6 +32,18 @@ if (fs.existsSync(processedFilesPath)) {
   }
 }
 
+async function sortFilesBySizeDesc(filePaths) {
+  return filePaths.map((filePath) => {
+    try {
+      const stats = fs.statSync(filePath);
+      return { filePath, size: stats.size };
+    } catch (e) {
+      console.error('Error statting file', e);
+      return null;
+    }
+  }).filter((x) => x !== null).sort((a, b) => b.size - a.size).map(file => file.filePath);
+}
+
 function saveProcessedFiles() {
   try {
     fs.writeFileSync(processedFilesPath, processedFiles.join('\n'));
@@ -68,7 +80,7 @@ function log(message) {
   send('proc-log', message);
 }
 
-function addNewFiles() {
+async function addNewFiles() {
   const res = globSync('**/*{/,+(.mp4|.MP4|.mts|.MTS|.m2ts|.M2TS|.flv|.FLV|.m4v|.M4V)}', {cwd: dir});
   for (let i = res.length - 1; i >= 0; i--) {
     if (res[i].endsWith('/') || res[i].endsWith('\\')) {
@@ -83,11 +95,12 @@ function addNewFiles() {
   send('proc-dir-change', {dir, fileCount: files.length});
   log(`found ${res.length} videos`);
   log(`there are ${processedFiles.length} known, already processed files in ${processedFilesPath} - if you expect needing to re-process some of the already compressed files, delete that file and restart the app`);
+  files = await sortFilesBySizeDesc(files);
 }
 
 function getNextFileName() {
   for (let file of files) {
-    if (processedFiles.includes(oneWayHash(file)) || failedFiles.includes(file) || file.includes('.batchviproc.')) {
+    if (processedFiles.includes(oneWayHash(file)) || failedFiles.includes(file) || file.includes('.batchviproc.') || file.includes('.tmp.') || file.includes('-h264.')) {
       continue;
     }
     return file;
@@ -183,7 +196,7 @@ ipcMain.on('proc-pick-dir', async (event, arg) => {
     dir = paths[0];
     spaceSavedMb = 0;
     try {
-      addNewFiles();
+      await addNewFiles();
       await stop();
       await start();
     } catch (err) {
