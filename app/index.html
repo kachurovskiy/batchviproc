@@ -1,26 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;"
+    >
     <title>batchviproc</title>
+    <link rel="icon" href="./icon.png">
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-    <div id="settingsContainer">
-      <h1>Batch video compression</h1>
-      <p>All consumer cameras record videos that can be compressed 2x without a visible loss of quality.
-        This happens because effective video encoding takes a lot of time and computing power while most
-        cameras have to record real-time and conserve battery.</p>
-      <p>On an average desktop, this operation takes 1-2x of the video run time e.g. a 30s video will take
-        a minute to process.</p>
-      <p>Pick a folder on your computer and this app will find all videos and process them one-by-one.</p>
-      <p>Metadata and file creation, modification and access dates will be preserved where possible.</p>
-      <p><button type="button" id="folderButton">Pick a folder</button></p>
-    </div>
-    <div id="logContainer">
-      <h2>Log</h2>
-      <p><textarea id="logArea" rows="15" style="width: 95%;" disabled></textarea></p>
-    </div>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Batch video compression</p>
+          <h1>batchviproc</h1>
+        </div>
+        <span class="status-badge" id="statusPill" data-status="idle" hidden>Idle</span>
+      </header>
+
+      <section class="workflow" aria-label="Batch controls">
+        <div class="folder-row">
+          <button type="button" id="folderButton" class="primary-button">Select folder</button>
+          <div class="folder-meta" id="folderMeta" hidden>
+            <span id="folderPath" class="folder-path">No folder selected</span>
+            <span id="fileCount" class="folder-count">0 videos found</span>
+          </div>
+
+          <div class="action-row" id="actionRow" hidden>
+            <button type="button" id="startButton" class="primary-button" disabled>Start</button>
+            <button type="button" id="stopButton" class="danger-button" disabled>Stop</button>
+          </div>
+        </div>
+
+        <div class="option-grid" id="optionGrid" hidden>
+          <label class="field">
+            <span>Quality</span>
+            <select id="qualitySelect">
+              <option value="23">Balanced</option>
+              <option value="20">High quality</option>
+              <option value="26">Compact</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Encoding speed</span>
+            <select id="presetSelect">
+              <option value="slow">Slow</option>
+              <option value="medium">Medium</option>
+              <option value="veryfast">Very fast</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="maintenance-row" id="maintenanceRow" hidden>
+          <span id="historySummary" class="history-summary">Processed history is stored locally.</span>
+          <button type="button" id="forgetButton" class="link-button" disabled>Forget processed history</button>
+        </div>
+      </section>
+
+      <section class="metrics" id="statGrid" aria-label="Batch status" hidden>
+        <article class="metric-item">
+          <span class="stat-label">Queued</span>
+          <strong id="queuedValue">0</strong>
+        </article>
+        <article class="metric-item">
+          <span class="stat-label">Completed</span>
+          <strong id="completedValue">0/0</strong>
+        </article>
+        <article class="metric-item">
+          <span class="stat-label">Saved</span>
+          <strong id="savedValue">0 MB</strong>
+        </article>
+        <article class="metric-item">
+          <span class="stat-label">Failed</span>
+          <strong id="failedValue">0</strong>
+        </article>
+      </section>
+
+      <section class="progress-panel" id="progressPanel" aria-label="Progress" hidden>
+        <div class="progress-heading">
+          <div>
+            <span class="section-label">Current file</span>
+            <strong id="currentFile">No active file</strong>
+          </div>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </section>
+
+      <section class="log-panel" id="logPanel" aria-label="Processing log" hidden>
+        <div class="panel-heading">
+          <h2>Log</h2>
+          <button type="button" id="clearLogButton" class="quiet-button">Clear log</button>
+        </div>
+        <textarea id="logArea" rows="14" readonly></textarea>
+      </section>
+    </main>
+
     <script src="./renderer.js"></script>
   </body>
 </html>

@@ -1,11 +1,30 @@
 {
   "name": "batchviproc",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Electron app for batch video processing",
   "main": "app/main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win portable"
+    "check": "node --check app/main.js && node --check app/preload.js && node --check app/renderer.js",
+    "dist": "electron-builder --publish never",
+    "release": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.kachurovskiy.batchviproc",
+    "productName": "batchviproc",
+    "artifactName": "${productName}-${version}-portable.${ext}",
+    "win": {
+      "target": "portable",
+      "icon": "app/icon.ico"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "kachurovskiy",
+        "repo": "batchviproc",
+        "releaseType": "release"
+      }
+    ]
   },
   "repository": {
     "type": "git",
@@ -20,7 +39,6 @@
   "dependencies": {
     "ffmpeg-static": "5.2.0",
     "glob": "11.0.0",
-    "tmp": "0.2.3",
     "utimes": "5.2.1"
   },
   "devDependencies": {

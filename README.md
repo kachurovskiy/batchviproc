@@ -1,24 +1,49 @@
 # Desktop batch video compression tool
 
-[Download EXE file](https://github.com/kachurovskiy/batchviproc/raw/main/batchviproc%201.0.5.exe)
+[Download the latest release](https://github.com/kachurovskiy/batchviproc/releases/latest)
 
-<img width="590" alt="batchviproc" src="https://user-images.githubusercontent.com/517919/148660250-5d73c5e8-d1ac-4918-a52e-e26d53000733.png">
+batchviproc scans a selected folder for videos and recompresses them one-by-one with ffmpeg. It preserves file metadata and creation, modification, and access dates where possible.
+
+## Features
+
+- Finds `.mp4`, `.mts`, `.m2ts`, `.flv`, and `.m4v` videos recursively.
+- Sorts the queue by largest files first.
+- Skips videos already recorded in the processed history.
+- Lets you choose quality and encoding speed before starting a batch.
+- Shows live queue, progress, current file, space saved, and failures.
+- Stops an active batch and removes temporary output from failed or stopped runs.
+- Keeps the original video when the recompressed output is not smaller.
 
 ## Development
 
-Make sure you have Git, Node JS and NPM installed.
+Make sure you have Git, Node.js, and npm installed.
 
-```
+```bash
 git clone https://github.com/kachurovskiy/batchviproc.git
 cd batchviproc
 npm install
 npm start
 ```
 
-# Building EXE file
+Run the syntax checks:
 
-```
-electron-builder --win portable
+```bash
+npm run check
 ```
 
-Delete the created `dist` folder and top-level `exe` file before making the next build or the `exe` file size will jump to over 100Mb.
+## Building and Releasing
+
+```bash
+npm run dist
+```
+
+Local builds are written to `dist/` and are not published.
+
+To publish a portable Windows EXE to GitHub Releases, set a GitHub token with repository release permissions and run:
+
+```powershell
+$env:GH_TOKEN = "your-token"
+npm run release
+```
+
+The release artifact is named from the package version, for example `batchviproc-1.1.0-portable.exe`.

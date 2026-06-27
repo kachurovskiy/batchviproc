@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="batchviproc icon">
+  <rect width="256" height="256" rx="36" fill="#151922"/>
+  <rect x="48" y="68" width="140" height="104" rx="10" fill="none" stroke="#d8e0ea" stroke-width="14"/>
+  <rect x="69" y="91" width="12" height="12" rx="2" fill="#d8e0ea"/>
+  <rect x="69" y="128" width="12" height="12" rx="2" fill="#d8e0ea"/>
+  <path d="M108 96v48l40-24-40-24z" fill="#ffffff"/>
+  <path d="M194 91h28v20h-28v21l-32-31 32-31v21z" fill="#1f5fbf"/>
+  <path d="M194 145h28v20h-28v21l-32-31 32-31v21z" fill="#1f5fbf"/>
+</svg>
