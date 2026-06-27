@@ -4,6 +4,8 @@
 
 batchviproc scans a selected folder for videos and recompresses them one-by-one with ffmpeg. It preserves file metadata and creation, modification, and access dates where possible.
 
+<img src="https://github.com/user-attachments/assets/c2dfa6da-d81e-4ec3-a631-e16d75878367" />
+
 ## Features
 
 - Finds `.mp4`, `.mts`, `.m2ts`, `.flv`, and `.m4v` videos recursively.
